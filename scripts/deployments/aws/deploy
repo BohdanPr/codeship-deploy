@@ -1,0 +1,12 @@
+#!/bin/sh
+pip install awscli
+pip install aws-sam-cli
+
+token="TOKEN_${ENV}"
+host="HOST_${ENV}"
+bucket_name="${S3_BUCKET}-${ENV}"
+aws s3 mb s3://${bucket_name}
+sam build
+sam package --s3-bucket ${bucket_name} --output-template-file ${ENV}-packaged.yaml
+sam deploy --template-file ${ENV}-packaged.yaml --stack-name ${bucket_name} --capabilities CAPABILITY_IAM --parameter-overrides Token=${token} Environment=${ENV} Host=${host}
+
